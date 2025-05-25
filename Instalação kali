@@ -1,0 +1,31 @@
+#Instalação:
+Os requisitos de instalação do Kali Linux variam dependendo do que você deseja instalar e da sua configuração. Para requisitos de sistema:
+ -No nível mais baixo, você pode configurar o Kali Linux como um servidor Secure Shell (SSH) básico, sem desktop, usando apenas 128 MB de RAM (512 MB recomendados) e 2 GB de espaço em disco .
+ -No nível mais alto, se você optar por instalar o desktop Xfce4 padrão e o kali-linux-default metapacote , você realmente deve ter como objetivo pelo menos 2 GB de RAM e 20 GB de espaço em disco .
+ -Ao usar aplicativos que exigem muitos recursos, como o Burp Suite, eles recomendam pelo menos 8 GB de RAM (e ainda mais se for um aplicativo web grande!) ou usar programas simultâneos ao mesmo tempo.
+
+Este guia também fará as seguintes suposições ao instalar o Kali Linux:
+ -Usando a imagem do instalador amd64.
+ -Suporte para unidade de CD/DVD/inicialização USB.
+ -Disco único para instalação.
+ -Conectado a uma rede (com DHCP e DNS ativados) que tem acesso de saída à Internet.
+
+1.Baixe o Kali Linux ( Recomendamos a imagem marcada como Instalador ).
+2.Grave o ISO do Kali Linux em DVD ou crie uma imagem do Kali Linux Live em uma unidade USB . (Se não for possível, confira a instalação de rede do Kali Linux ).
+3.Faça backup de todas as informações importantes do dispositivo em uma mídia externa.
+4.Certifique-se de que seu computador esteja configurado para inicializar a partir de CD/DVD/USB no seu BIOS/UEFI.
+5.Nas configurações UEFI, certifique-se de que o Secure Boot esteja desabilitado. O kernel do Kali Linux não é assinado e não será reconhecido pelo Secure Boot.
+
+passo a passo:
+
+ 1.Para iniciar a instalação, inicialize com a mídia de instalação escolhida. Você deverá ver a tela de inicialização do Kali Linux. Escolha entre Instalação gráfica ou Instalação (Modo texto). Neste exemplo, escolhemos a instalação gráfica.
+ 2.Escolha sua linguagem de preferência
+ 3.Adicione seu nome de host
+ 4.Se não houver um serviço DHCP em execução na rede, ele solicitará que você insira manualmente as informações da rede após verificar as interfaces de rede, ou você pode pular essa etapa.
+ 5.coloque seu nome de usuário
+ 6.digite uma senha
+ 7.como iniciante recomendasse utilizar a marcação no disco inteiro
+ 8.se não tiver certeza de como dividir seus arquivos, recomendo deixar tudo em uma só partição
+ 9.pode pular a configuração de rede, pois ela não estará configurada, mais tarde vocês conseguirá configurar isso
+ 10.dos softwares escolha o primeiro, o terceiro e os três últimos
+ 11.com isso já pode concluir a instalação
