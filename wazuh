@@ -1,0 +1,166 @@
+O servidor Wazuh é um componente central que inclui o gerenciador Wazuh e o Filebeat.
+O gerenciador Wazuh coleta e analisa dados dos agentes Wazuh implantados. Ele dispara alertas quando ameaças ou anomalias são detectadas.
+O Filebeat encaminha com segurança alertas e eventos arquivados para o indexador Wazuh.
+
+# Instalação
+ O processo de instalação é dividido em duas etapas:
+ 1.Instalação do nó do servidor Wazuh
+ 2.Configuração de cluster para implantação de vários nós
+ Observação Você precisa de privilégios de usuário root para executar todos os comandos descritos abaixo.
+
+1-instalação de nós:
+ passo 1:Instale os seguintes pacotes
+  apt-get install gnupg apt-transport-https
+
+ passo 2:Instale a chave GPG:
+  curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | gpg --no-default-keyring --keyring gnupg-ring:/usr/share/keyrings/wazuh.gpg --import && chmod 644 /usr/share/keyrings/wazuh.gpg
+ 
+ passo 3:Adicione o repositório.
+  echo "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main" | tee -a /etc/apt/sources.list.d/wazuh.list
+
+ passo 4:Atualize as informações dos pacotes.
+  apt-get update
+
+Instalando o gerenciador Wazuh:
+ 
+passo 1: Instale o pacote do gerenciador Wazuh.
+ apt-get -y install wazuh-manager
+
+Instalando o Filebeat
+ passo 1:Instale o pacote Filebeat.
+  apt-get -y install filebeat
+
+Configurando o Filebeat
+Baixe o arquivo de configuração pré-configurado do Filebeat.
+
+  curl -so /etc/filebeat/filebeat.yml https://packages.wazuh.com/4.12/tpl/wazuh/filebeat/filebeat.yml
+ 
+Edite o /etc/filebeat/filebeat.ymlarquivo de configuração e substitua o seguinte valor:
+ hosts: A lista de nós indexadores Wazuh aos quais se conectar. Você pode usar endereços IP ou nomes de host. Por padrão, o host é definido como localhost . Substitua-o pelo endereço do seu indexador Wazuh.hosts: ["127.0.0.1:9200"]
+ Se você tiver mais de um nó indexador Wazuh, poderá separar os endereços por vírgulas. Por exemplo,hosts: ["10.0.0.1:9200", "10.0.0.2:9200", "10.0.0.3:9200"]
+
+
+ # Wazuh - Filebeat configuration file
+   output.elasticsearch:
+   hosts: ["10.0.0.1:9200"]
+   protocol: https
+   username: ${username}
+   password: ${password}
+
+ Crie um keystore do Filebeat para armazenar com segurança as credenciais de autenticação.
+  
+   filebeat keystore create
+
+ Adicione o nome de usuário e a senha padrão admin: adminao keystore secrets.
+
+  echo admin | filebeat keystore add username --stdin --force
+  echo admin | filebeat keystore add password --stdin --force
+
+ Baixe o modelo de alertas para o indexador Wazuh.
+
+  curl -so /etc/filebeat/wazuh-template.json https://raw.githubusercontent.com/wazuh/wazuh/v4.12.0/extensions/elasticsearch/7.x/wazuh-template.json
+  chmod go+r /etc/filebeat/wazuh-template.json
+
+Instale o módulo Wazuh para Filebeat.
+ curl -s https://packages.wazuh.com/4.x/filebeat/wazuh-filebeat-0.4.tar.gz | tar -xvz -C /usr/share/filebeat/module
+ 
+Implantando certificados
+Observação Certifique-se de que uma cópia do wazuh-certificates.tararquivo, criada durante a etapa de configuração inicial, seja colocada no seu diretório de trabalho.
+Substitua <SERVER_NODE_NAME>pelo nome do certificado do nó do seu servidor Wazuh, o mesmo usado config.ymlna criação dos certificados. Em seguida, mova os certificados para o local correspondente.
+
+  NODE_NAME=<SERVER_NODE_NAME>
+  mkdir /etc/filebeat/certs
+  tar -xf ./wazuh-certificates.tar -C /etc/filebeat/certs/ ./$NODE_NAME.pem ./$NODE_NAME-key.pem ./root-ca.pem
+  mv -n /etc/filebeat/certs/$NODE_NAME.pem /etc/filebeat/certs/filebeat.pem
+  mv -n /etc/filebeat/certs/$NODE_NAME-key.pem /etc/filebeat/certs/filebeat-key.pem
+  chmod 500 /etc/filebeat/certs
+  chmod 400 /etc/filebeat/certs/*
+  chown -R root:root /etc/filebeat/certs
+
+Configurando a conexão do indexador Wazuh
+Observação Você pode pular esta etapa se não for usar o recurso de detecção de vulnerabilidades.
+Salve o nome de usuário e a senha do indexador Wazuh no keystore do gerenciador Wazuh usando a ferramenta wazuh-keystore:
+
+
+  echo '<INDEXER_USERNAME>' | /var/ossec/bin/wazuh-keystore -f indexer -k username
+  echo '<INDEXER_PASSWORD>' | /var/ossec/bin/wazuh-keystore -f indexer -k password
+
+Observação As credenciais de instalação passo a passo padrão são admin:admin
+ Edite /var/ossec/etc/ossec.confpara configurar a conexão do indexador.
+ Por padrão, as configurações do indexador têm um host definido. Ele está definido 0.0.0.0conforme destacado abaixo.
+
+<indexer>
+  <enabled>yes</enabled>
+  <hosts>
+    <host>https://0.0.0.0:9200</host>
+  </hosts>
+  <ssl>
+    <certificate_authorities>
+      <ca>/etc/filebeat/certs/root-ca.pem</ca>
+    </certificate_authorities>
+    <certificate>/etc/filebeat/certs/filebeat.pem</certificate>
+    <key>/etc/filebeat/certs/filebeat-key.pem</key>
+  </ssl>
+</indexer>
+
+Substitua 0.0.0.0pelo endereço IP ou nome do host do seu nó indexador Wazuh. Você pode encontrar esse valor no arquivo de configuração do Filebeat /etc/filebeat/filebeat.yml.
+Certifique-se de que o certificado e o nome da chave do Filebeat correspondam aos arquivos de certificado em /etc/filebeat/certs.
+Se você estiver executando uma infraestrutura de cluster, adicione uma <host>entrada para cada um dos seus nós. Por exemplo, em uma configuração de dois nós:
+
+
+<hosts>
+  <host>https://10.0.0.1:9200</host>
+  <host>https://10.0.0.2:9200</host>
+</hosts>
+
+A detecção de vulnerabilidades prioriza a comunicação com o primeiro nó da lista. Caso este não esteja disponível, ele alterna para o próximo nó.
+
+Iniciando o gerenciador Wazuh
+Habilite e inicie o serviço do gerenciador Wazuh.
+
+SistemadInicialização SysV
+
+systemctl daemon-reload
+systemctl enable wazuh-manager
+systemctl start wazuh-manager
+
+Execute o seguinte comando para verificar o status do gerenciador Wazuh.
+
+SistemadInicialização SysV
+
+systemctl status wazuh-manager
+Iniciando o serviço Filebeat
+Habilite e inicie o serviço Filebeat.
+
+SistemadInicialização SysV
+
+systemctl daemon-reload
+systemctl enable filebeat
+systemctl start filebeat
+Execute o seguinte comando para verificar se o Filebeat foi instalado com sucesso.
+
+
+filebeat test output
+Expanda a saída para ver um exemplo de resposta.
+
+Output
+elasticsearch: https://127.0.0.1:9200...
+  parse url... OK
+  connection...
+    parse host... OK
+    dns lookup... OK
+    addresses: 127.0.0.1
+    dial up... OK
+  TLS...
+    security: server's certificate chain verification is enabled
+    handshake... OK
+    TLS version: TLSv1.3
+    dial up... OK
+  talk to server... OK
+  version: 7.10.2
+
+O nó do seu servidor Wazuh foi instalado com sucesso. Repita esta etapa do processo de instalação para todos os nós do servidor Wazuh no seu cluster Wazuh e, em seguida, prossiga com a configuração do cluster Wazuh. Se você deseja um cluster de nó único do servidor Wazuh, tudo está configurado e você pode prosseguir diretamente para a instalação passo a passo do painel do Wazuh .
+Observação:
+Ação recomendada : desabilitar atualizações do Wazuh.
+Recomendamos desabilitar os repositórios de pacotes Wazuh após instalar todos os componentes neste servidor para evitar atualizações acidentais.
+Execute o seguinte comando somente após concluir todas as instalações:
