@@ -73,7 +73,7 @@ Clique em "iniciar" e depois em "Ferramentas Administrativas" para acessar o seu
  -Clique em "escopo" com o botão direito para alterar as propriedades e personalizar sua rede.
  -Cheque, em "iniciar," "painel de controle" e "Rede e Internet" para checar se sua máquina se conectou.
 
-COMANDO 
+COMANDO
 -abra o prompt de comando
  Ipconfig /all
  ping 192.168.0.0 (ip exemplo)
