@@ -15,3 +15,10 @@
    Cada arquivo no repositório terá seu passo a passo
    
    Lembrando que é necessário ter o virtual box para a realização de todo esse processo
+  
+  
+ # *membros*:
+ -Guilherme
+ 
+ -Bianca
+ 
