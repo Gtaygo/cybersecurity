@@ -1,0 +1,51 @@
+#Instalação 
+Etapa 1:
+  Vamos usar o nosso velho amigo VirtualBox para instalar o pfSense 2.4.4. Certifique-se de baixar o arquivo de imagem de CD (ISO).
+
+Etapa 2:
+passo 1. 
+  Tamanho da memória : 1024MB (ou mais, se você quiser)
+  Disco rígido : crie um disco rígido virtual agora
+  Tipo de arquivo do disco rígido : VDI
+  Armazenamento no disco rígido físico : alocado dinamicamente
+passo 2. Para Localização e tamanho do arquivo, escolha 8 GB e escolha o local em que deseja salvar o disco rígido virtual.
+
+Etapa  3:
+  Agora vamos atribuir mais 2 interfaces de rede. Só assim temos uma VM mais realista e mais interfaces para brincar. Clique com o botão direito do mouse na sua VM recém-criada e selecione Configurações .
+Navegue até a guia Rede e primeiro mude o NAT para Rede interna , para que o servidor DHCP do pfSense não interfira na sua própria rede.
+  Observe que, com a rede interna, você não pode acessar a interface da Web pfSense no seu computador host. Você precisaria de outra máquina virtual (como o Ubuntu) para acessar o pfSense. Essa é a maneira mais segura de se divertir sem quebrar nada em sua rede física.
+Se você deve ou deseja acessar o pfSense no seu computador host, defina as interfaces como “Adaptador somente para host”.
+  Quando isso for feito, selecione Adaptador 2 , marque Ativar adaptador de rede e também escolha Rede interna . Repita esta etapa com o adaptador 3 e clique em OK.
+
+Etapa 4:
+  Agora vá em frente e inicie sua recém-criada VM. Depois de começar, você será solicitado a fornecer uma imagem. Selecione o pfSense-CE-memstick-2.4.4-DEVELOPMENT- amd64-latest .iso
+
+Etapa 5:
+  Agora podemos executar o processo de instalação. 
+ passo 1:Na tela Aviso de direitos autorais e distribuição, pressione Enter para aceitar.
+ 
+ passo 2.Em seguida, selecione um mapa de teclas que melhor lhe convenha, encontre-o e pressione Enter. 
+Depois disso, selecione Continuar com o mapa de teclas YourKeyMap na parte superior da tela e pressione Enter.
+
+ passo 3.selecione Automático (UFS).
+
+ passo 4. Quando o processo estiver concluído, escolha Não para Configuração manual e pressione Enter.
+ 
+ passo 5.Confirme a reinicialização pressionando enter novamente.
+
+ Etapa 6:
+  Agora precisamos remover a imagem, caso contrário, o pfSense será inicializado na rotina de instalação novamente.
+ passo 1. selecione Dispositivos -> Unidades ópticas, no menu
+ passo 2. Remover disco da unidade virtual
+ passo 3. Confirme com Forçar desmontagem .
+ passo 4. Por fim, selecione Máquina -> Redefinir para reiniciar mais uma vez.
+
+Etapa 7:
+  Agora, o pfSense será inicializado em sua nova instalação. A primeira inicialização demora um pouco, pois o pfSense está tentando ajustar automaticamente suas interfaces. 
+Uma vez feito, você verá o menu pfSense e também o IP onde poderá acessar o firewall recém-instalado.
+  Agora esteja ciente: para acessar a interface da web, você precisa ter outra máquina virtual em sua “Rede interna”. A partir daí, você pode acessar o pfSense digitando
+192.168.1.1 no seu navegador. Em seguida, você executa o assistente de configuração inicial para concluir sua configuração; 
+
+Etapa8: (Opcional)
+  Se você deseja ter acesso à Internet para brincar com sua VM pfSense, basta configurar o Adaptador 1 (ou qual Adaptador representa sua interface WAN) como Bridged Network.
+O pfSense obterá automaticamente acesso à Internet a partir do servidor DHCP da sua rede.
