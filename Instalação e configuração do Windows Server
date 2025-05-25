@@ -1,0 +1,100 @@
+#*Adquirindo e configurando o SO do windows2008.*
+ -Adquira a ISO do Windows2008 no site oficial da microsoft para evitar possíveis problemas de segurança.
+ -Ao baixar o arquivo, acesse o Virtual Box e clique em "novo".
+ -Dê um nome para a sua máquina virtual, selecione a ISO da máquina, e escolha suas especificidades (tipo e versão) nos seus devidos locais.
+ -Na página seguinte, selecione a quantidade de memória da sua máquina, de preferência na quantidade recomendada (em verde) para o seu dispositivo.
+ -Então, selecione a opção de sua preferência na próxima página a respeito do disco da sua máquina, (não utilizar um disco virtual, usar um novo ou acrescentar um que já exista.)
+ -Selecione o tipo de disco rígido que preferir.
+ -Escolha, de preferência, a opção "dinamicamente alocado" para que o tamanho do disco possa se expandir conforme você ocupe o espaço deste.
+ -Caso tenha escolhido criar um novo disco, selecione o tamanho deste. Você pode apenas deixar a opção padrão selecionada pelo Virtual Box, se preferir
+ -Agora, você pode iniciar sua máquina virtual ao clicar em "finalizar."
+#Instalando o Windows2008.
+ -Ao iniciar a máquina virtual, pode ser que lhe seja pedido a localização da ISO novamente. Clique na pasta de arquivos, em acrescentar e procure a imagem.
+**você pode pular o passo anterior traqnuilamente caso isso não tenha ocorrido.
+ - No idioma, selecione o de sua preferência (o português ABNT2 possui cedilha.)
+ - Selecione os bits de sua preferência para seu Windows.
+ -Aceite o contrato da microsoft marcando-o como "lido"
+ -Selecione "avançado" paa instalar apenas o windows. 
+ -Avance tranquilamente a página seguinte e aguarde a instalação.
+ -Aguarde a´te que possa escolher o nome de sua Máquina, seu User e sua senha.
+ -Avançando, seu windows provavelmente iniciará normalmente.
+
+#Instalação do DNS no windows2008.
+ -Clique em "iniciar" e depois em "Ferramentas Administrativas" para acessar o seu Server Manager.
+ -Clique em "funções do servidor"
+ -Depois, clique em "Gerenciador de servidores." 
+ -Selecione DNS SERVER na lista de opções.
+ -Aceite as observações.
+ -Clique em instalar.
+ -Depois de carregar, você pode acessar o DNS ao repetir o primeiro passo e clicar em "DNS".
+#Configuração do DNS no windows2008.
+ *ZONA DIRETA:
+   -Clique com o botão direito em "Zona de pesquisa direta."
+   -Escolha "zona primária" e nomeie-a com um nome "exemplo.local"
+ *Adicionando o registro A:
+  -Clique com o botão direito no "Exemplo.local
+  -Clique em "Novo Host" e seleciona A ou AAAA.
+  -Digite o nome do seu host e o IP a ele atribuído.
+ *Adicionando um CNAME:
+  -Clique com o botão direito em "Zona de pesquisa direita" e então em "Novo Alias"
+  -Atribua o nome original e o outro nome.
+ *Adicionando o MX.
+  -Clique com o botão direito em "Zona de pesquisa direta" e então em "Novo Mail Exchanger"
+  -Deixe o campo "Host or child domain" vazio (para o domínio principal).
+  -Digite o FQDN do servidor de e-mail (ex: mail.empresa.local)
+*ZONA INVERSA:
+  -Clique com o botão direito em "Zona de pesquisa inversa"
+  -Selecione sua rede e então atribua a zona inversa à direta já criada.
+
+TESTES DE COMANDOS:
+*nslookup:
+nslookup servidor.empresa.local: Verifica o registro A.
+nslookup -type=mx empresa.local: Lista servidores MX.
+*dig (Windows):
+Instale o BIND para usar o dig.
+Comando: dig empresa.local MX
+
+#Instalando e configurando o DHCP no windows 2008
+Clique em "iniciar" e depois em "Ferramentas Administrativas" para acessar o seu Server Manager.
+ -Clique em "funções do servidor"
+ -Depois, clique em "Gerenciador de servidores." 
+ -Selecione DHCP na lista de opções.
+ -Clique em "próximo" nas observações.
+ -Selecione a sua rede.
+ -Selecione seu dominio, seu DNS anteriormente criado, e um alternativo se preferir.
+ -Selecione as opções disponiveis (WINS necesário ou não e especifique o servidor WINS se necessario.)
+ -Clique em "adicionar", o inicio e o fim dos IPs, a mascara, o gateway, e o tipo de sub-rede.
+ -Ative-o e clique em ok.
+ -Habilite ou não o modo sem monitoração.
+ -Use as credenciais do seu usuario para permitir o DHCP.
+ -Clique em instalar.
+ -Depois de carregar, você pode acessar o DHCP ao repetir o primeiro passo e clicar em "DHCP".
+ -Clique no seu servidor, em "IPV4/IPV6" (dependendo de qual você escolheu anteriormente.) 
+ -Clique em "escopo" com o botão direito para alterar as propriedades e personalizar sua rede.
+ -Cheque, em "iniciar," "painel de controle" e "Rede e Internet" para checar se sua máquina se conectou.
+
+COMANDO 
+-abra o prompt de comando
+ Ipconfig /all
+ ping 192.168.0.0 (ip exemplo)
+
+#baixar Active directory e configurar no windows 2008.
+-Tenha configurado os itens anteriores para evitar problemas futuros.
+-Clique em "iniciar" e depois em "Ferramentas Administrativas" para acessar o seu Server Manager.
+ -Clique em "funções do servidor"
+ -Depois, clique em "Gerenciador de servidores." 
+ -Selecione "active directory domain services" na lista de opções
+ -Clique em next tranquilamente e aguarde a instalação.
+ -Em "sumário de funções, clique em "Active directory domain services" e execute o dcpromo.exe na barra de aviso.
+ -Avance até que precise clicar em "criar novo dominio" e coloque o nome deste, ex: "cuscuz.local"
+ -Após carregar, selecione sua versão do windows e siga avancçando.
+ -Selecione o DNS.
+ -Clique em "sim" na barra de aviso sobre o dns.
+ -Coloque uma senha do adminstrador que será usado para iniciar o AD.
+ -Clique em finalizar e reinicie o PC.
+ -Depois de carregar, você pode acessar o AD ao repetir o primeiro passo e clicar em qualquer item do AD da lista.
+ -Você pode adicionar users ao clicar no item "users e pcs do active directory", clicar com o botão direito e "novo".
+
+COMANDOS
+nslookup #resolução dns para checar o server padrão.
+start //cuscuz.local #FQDN do dominio.
