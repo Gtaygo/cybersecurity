@@ -1,6 +1,6 @@
 
 # Conteúdo de cada arquivo
-readme = '''# Servidor Debian: Instalação, DNS e DHCP
+readme = # Servidor Debian: Instalação, DNS e DHCP
 
 Documentação prática para configurar um servidor Debian com DNS (BIND9) e DHCP (ISC DHCP Server).
 
@@ -11,7 +11,7 @@ Documentação prática para configurar um servidor Debian com DNS (BIND9) e DHC
 - [Servidor DHCP com ISC DHCP Server](docs/dhcp.md)
 '''
 
-instalacao = '''# Instalação do Debian em Máquina Virtual
+instalacao = # Instalação do Debian em Máquina Virtual
 
 ## Requisitos de Hardware
 
@@ -147,31 +147,3 @@ sudo systemctl restart isc-dhcp-server
 sudo ufw allow 67/udp && sudo ufw allow 68/udp
 '''
 
-Criar estrutura
-Path("debian-servidores/docs").mkdir(parents=True, exist_ok=True)
-Path("debian-servidores/README.md").write_text(readme)
-Path("debian-servidores/docs/instalacao.md").write_text(instalacao)
-Path("debian-servidores/docs/dns.md").write_text(dns)
-Path("debian-servidores/docs/dhcp.md").write_text(dhcp)
-
-print("Arquivos criados com sucesso!")
-
-yaml
-Copiar
-Editar
-
----
-
-## 🚀 2. Subir no GitHub
-
-Depois de rodar o script acima:
-
-```bash
-cd debian-servidores
-git init
-git add .
-git commit -m "Documentação Debian com DNS e DHCP"
-git branch -M main
-git remote add origin https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git
-git push -u origin main
-Substitua SEU_USUARIO e NOME_DO_REPOSITORIO pelo seu usuário e nome do repositório.
