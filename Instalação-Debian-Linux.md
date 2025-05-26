@@ -1,113 +1,72 @@
 
-Documentação Técnica – Instalação, DNS e DHCP no Debian
-1. Instalação do Debian (em Máquina Virtual)
-Requisitos de Hardware
-Instalação sem ambiente gráfico:
+# Conteúdo de cada arquivo
+readme = '''# Servidor Debian: Instalação, DNS e DHCP
 
-RAM mínima: 256 MB | Recomendado: 512 MB
+Documentação prática para configurar um servidor Debian com DNS (BIND9) e DHCP (ISC DHCP Server).
 
-Disco rígido: 4 GB
+## 📄 Documentação
 
-Instalação com ambiente gráfico:
+- [Instalação do Debian](docs/instalacao.md)
+- [Servidor DNS com BIND9](docs/dns.md)
+- [Servidor DHCP com ISC DHCP Server](docs/dhcp.md)
+'''
 
-RAM mínima: 1 GB | Recomendado: 2 GB
+instalacao = '''# Instalação do Debian em Máquina Virtual
 
-Disco rígido: 10 GB
+## Requisitos de Hardware
 
-Pré-requisitos
-Oracle VirtualBox instalado.
+- **Sem ambiente gráfico:** RAM 256 MB (mínimo), 512 MB (recomendado); 4 GB de disco
+- **Com ambiente gráfico:** RAM 1 GB (mínimo), 2 GB (recomendado); 10 GB de disco
 
-Imagem .iso do Debian disponível.
+## Pré-requisitos
 
-Passo a Passo
-No VirtualBox, clique em Novo, selecione a imagem .iso do Debian.
+- VirtualBox instalado
+- Arquivo `.iso` do Debian
 
-Defina o tamanho do disco e recursos (RAM, CPU).
+## Passo a passo
 
-Inicie a instalação e escolha a opção de instalação gráfica.
+1. Novo > selecione a `.iso`
+2. Configure espaço em disco
+3. Inicie e escolha "Instalação Gráfica"
+4. Escolha idioma, hostname (letras minúsculas)
+5. Defina senha root
+6. Crie usuário e senha
+7. Use disco inteiro e particionamento para iniciantes
+8. Não ler mídias adicionais
+9. Use `debian.org`
+10. Marque: Web, SSH, XFCE, Ambiente Debian, Sistema padrão
+'''
 
-Configure:
+dns = '''# Configuração do Servidor DNS (BIND9)
 
-Idioma e localização.
+## Pré-requisitos
 
-Hostname (em minúsculas).
+- Debian 12 com IP fixo (ex: 192.168.1.151)
+- Domínio: empresa.local | Rede: 192.168.1.0/24
 
-Senha do root (anote com segurança).
+## Instalação
 
-Nome de usuário e senha.
-
-Escolha “usar disco inteiro” e a opção de particionamento para iniciantes.
-
-Não adicionar mídias adicionais.
-
-Continuar usando o repositório debian.org.
-
-Na seleção de software, marque:
-
-Servidor Web
-
-Servidor SSH
-
-XFCE
-
-Ambiente de trabalho Debian
-
-Sistema padrão
-
-2. Configuração de Servidor DNS com BIND9
-Pré-requisitos
-Debian 12 atualizado
-
-Acesso root ou sudo
-
-IP estático: 192.168.1.151
-
-Domínio: empresa.local
-
-Rede: 192.168.1.0/24
-
-2.1 Instalação do BIND9
-bash
-Copiar
-Editar
+```bash
 sudo apt update && sudo apt upgrade -y
 sudo apt install bind9 bind9utils bind9-doc dnsutils -y
-named -v   # Verifica a versão
-sudo systemctl start named
-sudo systemctl enable named
-sudo systemctl status named
-2.2 Configuração do BIND9
-Editar /etc/bind/named.conf.options
-bash
-Copiar
-Editar
-sudo nano /etc/bind/named.conf.options
+Configuração
+named.conf.options
 conf
-Copiar
+copiar
 Editar
-acl "rede-privada" {
-  192.168.1.0/24;
-};
-
+acl "rede-privada" { 192.168.1.0/24; };
 options {
   directory "/var/cache/bind";
   recursion yes;
   allow-recursion { localhost; rede-privada; };
   listen-on { 127.0.0.1; 192.168.1.151; };
   allow-transfer { none; };
-  forwarders {
-    8.8.8.8;
-    8.8.4.4;
-  };
+  forwarders { 8.8.8.8; 8.8.4.4; };
   dnssec-validation auto;
   listen-on-v6 { any; };
 };
-Editar /etc/bind/named.conf.local
-bash
-Copiar
-Editar
-sudo nano /etc/bind/named.conf.local
-c
+named.conf.local
+conf
 Copiar
 Editar
 zone "empresa.local" {
@@ -121,97 +80,52 @@ zone "1.168.192.in-addr.arpa" {
   file "/etc/bind/reverse.empresa.local";
   allow-update { none; };
 };
-Verificar sintaxe
-bash
-Copiar
-Editar
-sudo named-checkconf
-2.3 Configuração das Zonas
-Criar Arquivos de Zona
-bash
-Copiar
-Editar
-cd /etc/bind
-sudo cp db.empty forward.empresa.local
-sudo cp db.empty reverse.empresa.local
-Editar forward.empresa.local
-bash
-Copiar
-Editar
-sudo nano forward.empresa.local
+forward.empresa.local
 dns
 Copiar
 Editar
 $TTL 604800
 @ IN SOA ns.empresa.local. admin.empresa.local. (
-            3 ; Serial
-       604800 ; Refresh
-        86400 ; Retry
-      2419200 ; Expire
-       604800 ) ; Negative Cache TTL
-
+  3 604800 86400 2419200 604800 )
 @ IN NS ns.empresa.local.
-ns     IN A 192.168.1.151
-www    IN A 192.168.1.190
-mail   IN A 192.168.1.191
-ftp    IN CNAME www.empresa.local.
+ns IN A 192.168.1.151
+www IN A 192.168.1.190
+mail IN A 192.168.1.191
+ftp IN CNAME www.empresa.local.
 @ IN MX 10 mail.empresa.local.
-Editar reverse.empresa.local
-bash
-Copiar
-Editar
-sudo nano reverse.empresa.local
+reverse.empresa.local
 dns
 Copiar
 Editar
 $TTL 604800
 @ IN SOA ns.empresa.local. admin.empresa.local. (
-            2 ; Serial
-       604800 ; Refresh
-        86400 ; Retry
-      2419200 ; Expire
-       604800 ) ; Negative Cache TTL
-
+  2 604800 86400 2419200 604800 )
 @ IN NS ns.empresa.local.
 151 IN PTR ns.empresa.local.
 190 IN PTR www.empresa.local.
 191 IN PTR mail.empresa.local.
-Validar arquivos de zona
-bash
-Copiar
-Editar
-sudo named-checkzone empresa.local forward.empresa.local
-sudo named-checkzone 1.168.192.in-addr.arpa reverse.empresa.local
-Reiniciar o serviço
-bash
-Copiar
-Editar
-sudo systemctl restart bind9
-3. Servidor DHCP com ISC DHCP Server
-3.1 Instalação
+'''
+
+dhcp = '''# Configuração do Servidor DHCP (ISC DHCP Server)
+
+Instalação
 bash
 Copiar
 Editar
 sudo apt update
 sudo apt install isc-dhcp-server -y
-3.2 Configurar Interface
-bash
-Copiar
-Editar
-sudo nano /etc/default/isc-dhcp-server
+Interface de rede
 conf
 Copiar
 Editar
-INTERFACESv4="enp0s3"  # Substitua pela sua interface de rede
+# /etc/default/isc-dhcp-server
+INTERFACESv4="enp0s3"
 INTERFACESv6=""
-3.3 Editar Arquivo Principal
-bash
-Copiar
-Editar
-sudo nano /etc/dhcp/dhcpd.conf
+Configuração principal
 conf
 Copiar
 Editar
+# /etc/dhcp/dhcpd.conf
 default-lease-time 600;
 max-lease-time 7200;
 authoritative;
@@ -224,30 +138,40 @@ subnet 192.168.10.0 netmask 255.255.255.0 {
   option broadcast-address 192.168.10.255;
   option subnet-mask 255.255.255.0;
 }
-Verificar sintaxe
+Teste
 bash
 Copiar
 Editar
 sudo dhcpd -t -cf /etc/dhcp/dhcpd.conf
-3.4 Reiniciar Serviço e Ativar no Boot
-bash
-Copiar
-Editar
 sudo systemctl restart isc-dhcp-server
-sudo systemctl enable isc-dhcp-server
-sudo systemctl status isc-dhcp-server
-3.5 Configurar o Firewall
-bash
+sudo ufw allow 67/udp && sudo ufw allow 68/udp
+'''
+
+Criar estrutura
+Path("debian-servidores/docs").mkdir(parents=True, exist_ok=True)
+Path("debian-servidores/README.md").write_text(readme)
+Path("debian-servidores/docs/instalacao.md").write_text(instalacao)
+Path("debian-servidores/docs/dns.md").write_text(dns)
+Path("debian-servidores/docs/dhcp.md").write_text(dhcp)
+
+print("Arquivos criados com sucesso!")
+
+yaml
 Copiar
 Editar
-sudo ufw allow 67/udp
-sudo ufw allow 68/udp
-sudo ufw reload
-3.6 Testar DHCP
-bash
-Copiar
-Editar
-sudo dhclient -v -r
-sudo dhclient -v
-ip a show dev <interface>
-sudo tail -f /var/log/syslog | grep dhcpd
+
+---
+
+## 🚀 2. Subir no GitHub
+
+Depois de rodar o script acima:
+
+```bash
+cd debian-servidores
+git init
+git add .
+git commit -m "Documentação Debian com DNS e DHCP"
+git branch -M main
+git remote add origin https://github.com/SEU_USUARIO/NOME_DO_REPOSITORIO.git
+git push -u origin main
+Substitua SEU_USUARIO e NOME_DO_REPOSITORIO pelo seu usuário e nome do repositório.
