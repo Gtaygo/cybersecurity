@@ -93,12 +93,12 @@
 9. Personalize escopos clicando com o botão direito em **IPv4/IPv6 → Escopo**.
 
 ### Teste:
-```bash``
+```bash
 ipconfig /all
 ping 192.168.0.1
 ##
-
-🏢 Instalando e Configurando o Active Directory (AD)
+````
+## 🏢 Instalando e Configurando o Active Directory (AD)
 Com o DNS e DHCP configurados, vá em:
 
 Iniciar → Ferramentas Administrativas → Server Manager
