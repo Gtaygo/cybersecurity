@@ -23,7 +23,7 @@ Este guia cobre a instalação de um nó do servidor **Wazuh** com **Filebeat** 
 
 ### 1. Instale pacotes básicos
 
-```bash``
+```bash
 apt-get install gnupg apt-transport-https
 
 curl -s https://packages.wazuh.com/key/GPG-KEY-WAZUH | \
