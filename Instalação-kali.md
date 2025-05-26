@@ -98,12 +98,3 @@ sudo nmtui
 
 
 ---
-
-Se quiser, posso:
-
-- Gerar o arquivo `README.md` para download  
-- Ajudar a criar e publicar o repositório no GitHub passo a passo  
-- Adicionar imagens e capturas de tela ao guia (se desejar um visual mais completo)
-
-Qual desses você gostaria de seguir?
-
