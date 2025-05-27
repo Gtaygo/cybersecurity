@@ -18,7 +18,7 @@
   
   
  # *membros*:
- -Guilherme
+ -Guilherme Taygo
  
- -Bianca
+ -Bianca Marinho
  
